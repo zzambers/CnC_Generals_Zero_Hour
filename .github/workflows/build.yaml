@@ -1,0 +1,35 @@
+on:
+  push:
+    branches: "*"
+  pull_request:
+    branches: "*"
+
+
+jobs:
+  build-windows:
+    name: "build windows"
+    runs-on: "windows-latest"
+    steps:
+      - name: checkout Sources
+        uses: actions/checkout@v3
+      - name: build
+        shell: cmd
+        run: |
+          call "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars32.bat"
+          set
+          set CL=/D_OPERATOR_NEW_DEFINED_=1 %CL%
+          cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release -B build && cmake --build build
+
+  build-windows-2019:
+    name: "build windows"
+    runs-on: "windows-2019"
+    steps:
+      - name: checkout Sources
+        uses: actions/checkout@v3
+      - name: build
+        shell: cmd
+        run: |
+          call "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars32.bat"
+          set
+          set CL=/D_OPERATOR_NEW_DEFINED_=1 %CL%
+          cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release -B build && cmake --build build

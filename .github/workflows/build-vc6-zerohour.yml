@@ -3,7 +3,7 @@ name: Build Zero Hour with VC6
 on:
   push:
     branches:
-      - main
+      - "*"
     paths:
       - "GeneralsMD/**"
       - "Dependencies/**"

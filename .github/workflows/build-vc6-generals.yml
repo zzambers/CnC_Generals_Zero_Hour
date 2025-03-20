@@ -3,7 +3,7 @@ name: Build Generals with VC6
 on:
   push:
     branches:
-      - main
+      - "*"
     paths:
       - "Generals/**"
       - "Dependencies/**"

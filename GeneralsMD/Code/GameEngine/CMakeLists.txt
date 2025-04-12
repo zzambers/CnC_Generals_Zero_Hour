@@ -1157,11 +1157,14 @@ target_link_libraries(z_gameengine PRIVATE
 )
 
 target_link_libraries(z_gameengine PUBLIC
+    atl_classes
     d3d8lib
     gamespy::gamespy
     gz_config
     gz_utility
+    imm32
     stlport
+    winmm
     z_browserdispatch
     z_compression
     z_wwvegas

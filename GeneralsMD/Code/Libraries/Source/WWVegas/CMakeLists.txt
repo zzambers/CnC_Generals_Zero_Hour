@@ -12,6 +12,9 @@ target_link_libraries(z_wwcommon INTERFACE
     gz_utility
     milesstub
     stlport
+    vfw32
+    winmm
+    ws2_32
 )
 
 target_include_directories(z_wwcommon INTERFACE

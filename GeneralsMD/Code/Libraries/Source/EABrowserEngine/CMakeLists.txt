@@ -1,6 +1,15 @@
 add_library(z_browserengine INTERFACE)
 
-if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
+if(WIN32 OR MINGW OR "${CMAKE_SYSTEM}" MATCHES "Windows")
+    if(MINGW)
+    add_custom_command(
+        OUTPUT BrowserEngine_i.c BrowserEngine.h
+        COMMAND "$ENV{WIDL}" "${CMAKE_CURRENT_LIST_DIR}/BrowserEngine.idl" -H BrowserEngine.h
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        DEPENDS "${CMAKE_CURRENT_LIST_DIR}/BrowserEngine.idl"
+        VERBATIM
+    )
+    else()
     add_custom_command(
         OUTPUT BrowserEngine_i.c BrowserEngine.h
         COMMAND midl.exe "${CMAKE_CURRENT_LIST_DIR}\\BrowserEngine.idl" /header BrowserEngine.h
@@ -8,6 +17,7 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
         DEPENDS "${CMAKE_CURRENT_LIST_DIR}/BrowserEngine.idl"
         VERBATIM
     )
+    endif()
     add_library(z_browserenginewin STATIC BrowserEngine_i.c)
     set_target_properties(z_browserenginewin PROPERTIES OUTPUT_NAME browserenginewin)
     target_link_libraries(z_browserengine INTERFACE z_browserenginewin)

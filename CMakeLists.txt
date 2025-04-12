@@ -38,6 +38,11 @@ include(cmake/compilers.cmake)
 
 include(FetchContent)
 
+message(STATUS "WIN32: ${WIN32}")
+message(STATUS "MINGW: ${MINGW}")
+message(STATUS "CMAKE_SYSTEM: ${CMAKE_SYSTEM}")
+message(STATUS "CMAKE_SIZEOF_VOID_P: ${CMAKE_SIZEOF_VOID_P}")
+
 # Find/Add build dependencies and stubs shared by all projects
 if((WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows") AND ${CMAKE_SIZEOF_VOID_P} EQUAL 4)
     include(cmake/miles.cmake)
@@ -46,6 +51,11 @@ if((WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows") AND ${CMAKE_SIZEOF_VOID_P} EQU
         include(cmake/stlport.cmake)
     else()
         add_library(stlport INTERFACE) # Do not use stlport
+    endif()
+    if(MINGW)
+        include(cmake/atl.cmake)
+    else()
+        add_library(atlclasses INTERFACE) # Custom atl library not used
     endif()
     include(cmake/dx8.cmake)
     include(cmake/dbghelp.cmake)

@@ -1,0 +1,56 @@
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+    build:
+      name: build-linux-mingw
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout Code
+          uses: actions/checkout@v4
+        - name: Install deps
+          run: |
+            sudo dpkg --add-architecture i386
+            sudo apt-get update
+            sudo apt-get install cmake gcc-mingw-w64-i686-win32 g++-mingw-w64-i686-win32 mingw-w64-tools libwine-dev wine64-tools wine32 xvfb
+            ls /usr/i686-w64-mingw32/include/
+        - name: Prepare wine prefix
+          run: |
+            # so that wine init output does not create noise in build output later
+            Xvfb :1 &
+            sleep 5
+            DISPLAY=:1 wineboot --init
+            kill $!
+        - name: Set evironment vars
+          run: |
+            echo "CC=i686-w64-mingw32-gcc-win32" >> $GITHUB_ENV
+            echo "CXX=i686-w64-mingw32-g++-win32" >> $GITHUB_ENV
+            echo "CXXFLAGS=-D_WINDOWS -D_USE_MATH_DEFINES" >> $GITHUB_ENV
+            echo "WIDL=widl" >> $GITHUB_ENV
+            echo "WINE=wine" >> $GITHUB_ENV
+            # workaround:
+            # undefined reference to `_imp___Z18_set_se_translatorPU5cdeclFvjP19_EXCEPTION_POINTERSE'
+            # see: https://sourceforge.net/p/mingw-w64/mailman/mingw-w64-public/thread/c0b1c0d1-bd39-6a2-f88b-dc49d0a8a4bf%40martin.st/#msg37707104
+            mkdir msvcrt-fix
+            printf '%s\n' EXPORTS '_imp___Z18_set_se_translatorPU5cdeclFvjP19_EXCEPTION_POINTERSE == msvcrt.?_set_se_translator@@YAP6AXIPEAU_EXCEPTION_POINTERS@@@ZP6AXI0@Z@Z' > msvcrt-fix/msvcrt-fix.def
+            i686-w64-mingw32-dlltool -d msvcrt-fix/msvcrt-fix.def -l msvcrt-fix/libmsvcrt-fix.a
+            echo "LDFLAGS=-L $PWD/msvcrt-fix" >> $GITHUB_ENV
+        - name: Configure
+          run: |
+            cmake \
+            -DCMAKE_SYSTEM_NAME=Windows \
+            -DGENZH_BUILD_ZEROHOUR=ON \
+            -DGENZH_BUILD_GENERALS=OFF \
+            -DGENZH_BUILD_ZEROHOUR_TOOLS=OFF \
+            -DGENZH_BUILD_ZEROHOUR_EXTRAS=OFF \
+            -G "Unix Makefiles" \
+            -B build
+        - name: Build
+          run: |
+            make -C build -j4 VERBOSE=1
+            #cmake --build build -- VERBOSE=1

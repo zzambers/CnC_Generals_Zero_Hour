@@ -37,3 +37,7 @@ if (NOT IS_VS6_BUILD)
         add_compile_options(/Zc:__cplusplus)
     endif()
 endif()
+
+if (MINGW)
+    link_libraries(msvcrt-fix)
+endif()

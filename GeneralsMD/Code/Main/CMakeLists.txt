@@ -48,7 +48,9 @@ file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/BuildVersion.h
 "
 )
 
-target_link_options(z_generals PRIVATE "/NODEFAULTLIB:libci.lib")
+if(MSVC)
+    target_link_options(z_generals PRIVATE "/NODEFAULTLIB:libci.lib")
+endif()
 
 target_include_directories(z_generals PRIVATE
     .

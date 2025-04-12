@@ -89,7 +89,7 @@ public:
   }
 #else
 
-	volatile std::atomic_flag Flag{};
+	std::atomic_flag Flag{};
 
 	void ThreadSafeSetFlag()
 	{

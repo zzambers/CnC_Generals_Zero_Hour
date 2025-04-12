@@ -72,7 +72,7 @@ static void __declspec(naked) _pleave(void)
   }
 }
 
-extern "C" void __declspec(naked) _cdecl _penter(void)
+extern "C" void __declspec(naked) __cdecl _penter(void)
 {
   unsigned callerFunc,ESPonReturn,callerRet;
   ProfileFuncLevelTracer *p;
